@@ -50,6 +50,7 @@ void test_search(int array[], const int size, const int key, const int index)
 template <class T, class TFunc, class P1, class P2>
 void test(T expected, TFunc f, P1 p1, P2 p2)
 {
+	cout << "Expected: " << expected << " Key: " << p2 << endl;
 	auto result = f(p1, p2);
 	if (expected != result)
 	{
@@ -69,6 +70,7 @@ int binary_search_impl(vIterator begin, vIterator end, int b)
 //TIter binary_search_1(TIter begin, TIter end, T key)
 vIterator binary_search_1(vIterator begin, vIterator end, int key)
 {
+	/*
 	assert(std::is_sorted(begin, end));
 	auto size = end - begin;
 	if (size == 0)
@@ -88,6 +90,62 @@ vIterator binary_search_1(vIterator begin, vIterator end, int key)
 	}
 	else
 		return binary_search_1(m, end, key);
+		*/
+	assert(std::is_sorted(begin, end));
+	
+
+	auto size = end - begin;
+	if (size == 0)
+	{
+		return end;
+	}
+	if (size == 1)
+	{
+		return (*begin) == key ? begin : end;
+	}
+	assert(size > 0);
+
+	auto m = begin + (end - begin) / 2;
+	if (key < *m)
+	{
+		auto r = binary_search_1(begin, m, key);
+		return m == r ? end : r;
+	}
+	else if (*m < key)
+	{
+		return binary_search_1(m + 1, end, key);
+	}
+	else
+	{
+		return m;
+	}
+}
+
+
+//template <class TIter, class T>
+//TIter binary_search_1(TIter begin, TIter end, T key)
+vIterator binary_search_1_it(vIterator begin, vIterator end, int key)
+{
+	assert(std::is_sorted(begin, end));
+	while (begin < end)
+	{
+		auto m = begin + (end - begin) / 2;
+
+		if (key < *m)
+		{
+			end = m;
+		}
+		else if (*m < key)
+		{
+			begin = m + 1;
+		}
+		else
+		{
+			return m;
+		}
+	}
+
+	return begin;
 }
 
 template <class TFunc>
@@ -132,7 +190,7 @@ void test_binary_search(TFunc binary_search_impl)
 
 void test_all_binary_searches()
 {
-	test_binary_search(binary_search_1);
+	test_binary_search(binary_search_1_it);
 }
 
 void main()
