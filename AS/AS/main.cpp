@@ -1,7 +1,7 @@
 #include <iostream>
-#include <assert.h>
-#include <vector>
 #include <algorithm>
+#include <vector>
+#include <assert.h>
 
 using namespace std;
 
@@ -9,13 +9,13 @@ const int search_2(int array[], const int size, const int key)
 {
 	int i = 0;
 	array[size] = key;
-	
-	while(array[i] != key)
+
+	while (array[i] != key)
 	{
 		++i;
 	}
-	
-	if(i == size)
+
+	if (i == size)
 	{
 		return -1;
 	}
@@ -29,21 +29,21 @@ const int search_1(const int array[], const int size, const int key)
 {
 	int elementIndex = -1;
 
-	for(int i = 0; i < size; ++i)
+	for (int i = 0; i < size; ++i)
 	{
-		if(array[i] == key)
+		if (array[i] == key)
 		{
 			elementIndex = i;
 		}
 	}
-	
+
 	return elementIndex;
 }
 
 void test_search(int array[], const int size, const int key, const int index)
 {
 	int result = search_1(array, size, key);
-	
+
 	std::cout << ((result == index) ? "OK" : "FAIL") << std::endl;
 }
 
@@ -70,29 +70,8 @@ int binary_search_impl(vIterator begin, vIterator end, int b)
 //TIter binary_search_1(TIter begin, TIter end, T key)
 vIterator binary_search_1(vIterator begin, vIterator end, int key)
 {
-	/*
 	assert(std::is_sorted(begin, end));
-	auto size = end - begin;
-	if (size == 0)
-	{
-		return end;
-	}
-	if (size == 1)
-	{
-		return (*begin) == key ? begin : end;
-	}
 
-	auto m = begin + (end - begin) / 2;
-	if (key < *m)
-	{
-		auto r = binary_search_1(begin, m, key);
-		return m == r ? end : r;
-	}
-	else
-		return binary_search_1(m, end, key);
-		*/
-	assert(std::is_sorted(begin, end));
-	
 
 	auto size = end - begin;
 	if (size == 0)
@@ -159,10 +138,10 @@ void test_binary_search(TFunc binary_search_impl)
 		return result == v.end() ? -1 : result - v.begin();
 	};
 
-	
+
 	// degenarated
 	test(-1, adaptor, Vec(), key);
-	
+
 	// trivial
 	test(-1, adaptor, Vec({ 1 }), key);
 	test(0, adaptor, Vec({ 42 }), key);
@@ -185,7 +164,7 @@ void test_binary_search(TFunc binary_search_impl)
 	// binary search specific
 	test(3, adaptor, Vec({ 3, 5, 41, 42, 45, 67 }), key);
 	test(2, adaptor, Vec({ 3, 5, 42, 45, 67 }), key);
-	
+
 }
 
 void test_all_binary_searches()
@@ -193,8 +172,131 @@ void test_all_binary_searches()
 	test_binary_search(binary_search_1_it);
 }
 
+template <class TIter>
+TIter min_element(TIter b, TIter e)
+{
+	TIter result = b;
+	while (b < end)
+	{
+		if (*b < *result)
+			result = b;
+
+		++b;
+	}
+	return result;
+}
+
+template <class TIter>
+void sort_selection(TIter b, TIter e)
+{
+	for (TIter pivot = b; pivot < e; ++pivot)
+	{
+		assert(std::is_sorted(b, pivot));
+		auto m = min_element(pivot, e);
+		if (pivot != m)
+			swap(*pivot, *m);
+	}
+}
+
+template <class TIter>
+void sort_selection_fun(TIter b, TIter e)
+{
+
+}
+
+template <class TIter>
+void buble_search(TIter b, TIter e)
+{
+	for (TIter i = b; i < e; ++i)
+	{
+		for (TIter j = e; j > b; --j)
+		{
+			//if (*j < *(j + 1))
+				//std::cout << "1";
+				//std::swap(j, (j + 1));
+		}
+	}
+}
+
+template <class TIter>
+void sort_buble(TIter b, TIter e)
+{
+	for (TIter pivot = e; pivot != b; --pivot)
+	{
+		for (TIter i = b; i < pivot; ++i)
+		{
+			auto next_i = i + 1;
+			if (*next_i < *i)
+				std::cout << "1";
+		}
+	}
+}
+
+template <class TIter>
+void print(TIter b, TIter e)
+{
+	/*
+	while (b < e)
+		std::cout << *b++ << " ";
+
+	std::cout << std::endl;
+	*/
+}
+
+template <class TIter>
+void outer_merge(TIter b1, TIter e1, TIter b2, TIter e2, TIter out)
+{
+	TIter i1 = b1;
+	TIter i2 = b2;
+
+	TIter b_out = out;
+	while (i1 < e1 && i2 < e2)
+	{
+		assert(is_sorted(b_out, out));
+		assert((i1 - b1) + (i2 - b2) == (out - b_out));
+		if (*i1 < *i2)
+			*out = *i1++;
+		else
+			*out = *i2++;
+
+		assert(std::is_sorted(b_out, out));
+		out++;
+	}
+
+	out = copy(i1, e1, out);
+	out = copy(i2, e2, out);
+}
+
+template <class TIter>
+void merge_sort(TIter b, TIter e, TIter buff)
+{
+	if (e - b > 1)
+	{
+		TIter m = b + (e - b) / 2;
+		merge_sort(b, m, buff);
+		merge_sort(m, e, buff);
+		outer_merge(b, m, m, e, buff);
+		copy(buff, buff + (e - b), b);
+	}
+
+	assert(std::is_sorted(b, e));
+}
+
+template <class TFunc>
+void test_sort(TFunc sort_impl)
+{
+
+}
+
+template <class T>
+void test_all_sort()
+{
+	test_sort(merge_sort);
+}
+
 void main()
 {
+	/*
 	test_all_binary_searches();
 	int testArray1_1[1] = { 1 };
 	int testArray1_2[1] = { 2 };
@@ -208,7 +310,17 @@ void main()
 	test_search(testArray3, 3, 5, 1);
 	test_search(testArray3, 3, 1, 0);
 	test_search(testArray3, 3, 10, 2);
-	
-	
+
+	*/
+	/////////////////////////////////////////////
+	//std::vector<int> testArray4 = { 5, 3, 8, 1 };
+	//std::vector<int> testArray5 = { 0, 0, 0, 0 };
+	//sort_buble(testArray4.begin(), testArray4.end());
+	//print(testArray4.begin(), testArray4.end());
+
+	/////////////////////////////////////////////
+	//merge_sort(testArray4.begin(), testArray4.end(), testArray5.begin());
+	//test_all_sort();
+
 	system("pause");
 }
